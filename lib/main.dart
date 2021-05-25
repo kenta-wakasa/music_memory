@@ -2,22 +2,25 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(
+    const MyApp(),
+  );
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Music Memory',
       theme: ThemeData(),
-      home: MainPage(title: 'Music Memory'),
+      home: const MainPage(title: 'Music Memory'),
     );
   }
 }
 
 class MainPage extends StatefulWidget {
-  MainPage({Key? key, required this.title}) : super(key: key);
+  const MainPage({Key? key, required this.title}) : super(key: key);
 
   final String title;
 
@@ -73,7 +76,7 @@ class _MainPageState extends State<MainPage> {
                   width: 200,
                   height: 200,
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.only(
+                    borderRadius: const BorderRadius.only(
                       topRight: Radius.circular(200),
                     ),
                     color: Colors.amber.withOpacity(.5),
@@ -90,7 +93,7 @@ class _MainPageState extends State<MainPage> {
             ),
           ),
           if (clear)
-            Center(
+            const Center(
               child: Text(
                 'CLEAR!!',
                 style: TextStyle(
@@ -111,9 +114,11 @@ class _MainPageState extends State<MainPage> {
 }
 
 class SoundButton extends StatelessWidget {
-  SoundButton({required this.player, required this.fileName});
+  const SoundButton({Key? key, required this.player, required this.fileName})
+      : super(key: key);
   final AudioCache player;
   final String fileName;
+
   @override
   Widget build(BuildContext context) {
     return Draggable<String>(
@@ -122,13 +127,11 @@ class SoundButton extends StatelessWidget {
         onPressed: () {
           player.play(fileName);
         },
-        shape: CircleBorder(),
+        shape: const CircleBorder(),
         fillColor: Colors.amber,
       ),
-      feedback: RawMaterialButton(
-        onPressed: () {
-          player.play(fileName);
-        },
+      feedback: const RawMaterialButton(
+        onPressed: null,
         shape: CircleBorder(),
         fillColor: Colors.amber,
       ),
