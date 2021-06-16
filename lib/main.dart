@@ -1,10 +1,13 @@
 import 'package:audioplayers/audioplayers.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(
-    const MyApp(),
-  );
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Firebaseの初期化
+  await Firebase.initializeApp();
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -114,8 +117,7 @@ class _MainPageState extends State<MainPage> {
 }
 
 class SoundButton extends StatelessWidget {
-  const SoundButton({Key? key, required this.player, required this.fileName})
-      : super(key: key);
+  const SoundButton({Key? key, required this.player, required this.fileName}) : super(key: key);
   final AudioCache player;
   final String fileName;
 
