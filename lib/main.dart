@@ -1,8 +1,11 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:music_memory/utils.dart';
+import 'package:music_memory/models/experiment.dart';
+import 'package:music_memory/repositories/experiment_repository.dart';
+import 'package:music_memory/utils/utils.dart';
 import 'package:music_memory/widgets/instruction_page.dart';
 
 Future<void> main() async {
@@ -85,39 +88,55 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class MainPage extends StatelessWidget {
+class MainPage extends StatefulWidget {
   const MainPage({Key? key}) : super(key: key);
 
+  @override
+  State<MainPage> createState() => _MainPageState();
+}
+
+class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('実験選択'),
       ),
-      body: ListView(
-        children: [
-          SizedBox(
-            height: 120,
-            child: Card(
-              child: InkWell(
-                onTap: () async {
-                  pushAndRemoveUntilPage(
-                    context,
-                    const InstructionPage(
-                      experimentId: 'mitsui',
+      body: FutureBuilder<List<Experiment>>(
+        future: ExperimentRepository.fetchExperimentList(),
+        builder: (context, snapshot) {
+          final experimentList = snapshot.data;
+          if (experimentList == null) {
+            return const Center(child: CupertinoActivityIndicator());
+          }
+          return ListView.builder(
+            itemCount: experimentList.length,
+            itemBuilder: (context, index) {
+              final experiment = experimentList[index];
+              return SizedBox(
+                height: 120,
+                child: Card(
+                  child: InkWell(
+                    onTap: () async {
+                      pushAndRemoveUntilPage(
+                        context,
+                        InstructionPage(
+                          experimentId: experiment.ref.id,
+                        ),
+                      );
+                    },
+                    child: Center(
+                      child: Text(
+                        experiment.name,
+                        style: Theme.of(context).textTheme.headline6,
+                      ),
                     ),
-                  );
-                },
-                child: Center(
-                  child: Text(
-                    '三井実験',
-                    style: Theme.of(context).textTheme.headline6,
                   ),
                 ),
-              ),
-            ),
-          )
-        ],
+              );
+            },
+          );
+        },
       ),
     );
   }
