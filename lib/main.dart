@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:music_memory/models/experiment.dart';
-import 'package:music_memory/repositories/experiment_repository.dart';
+import 'package:music_memory/repositories/repository.dart';
+import 'package:music_memory/repositories/user_data.dart';
 import 'package:music_memory/utils/utils.dart';
 import 'package:music_memory/widgets/instruction_page.dart';
 
@@ -102,8 +103,8 @@ class _MainPageState extends State<MainPage> {
       appBar: AppBar(
         title: const Text('実験選択'),
       ),
-      body: FutureBuilder<List<Experiment>>(
-        future: ExperimentRepository.fetchExperimentList(),
+      body: StreamBuilder<List<Experiment>>(
+        stream: Repository.streamExperiment(),
         builder: (context, snapshot) {
           final experimentList = snapshot.data;
           if (experimentList == null) {
@@ -118,11 +119,11 @@ class _MainPageState extends State<MainPage> {
                 child: Card(
                   child: InkWell(
                     onTap: () async {
+                      UserData.instance.experiment = experiment;
+                      UserData.instance.fetchQuestionList();
                       pushAndRemoveUntilPage(
                         context,
-                        InstructionPage(
-                          experimentId: experiment.ref.id,
-                        ),
+                        InstructionPage(experiment: experiment),
                       );
                     },
                     child: Center(
