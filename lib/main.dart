@@ -119,8 +119,7 @@ class _MainPageState extends State<MainPage> {
                 child: Card(
                   child: InkWell(
                     onTap: () async {
-                      UserData.instance.experiment = experiment;
-                      UserData.instance.fetchQuestionList();
+                      UserData.instance.init(experiment);
                       pushAndRemoveUntilPage(
                         context,
                         InstructionPage(experiment: experiment),

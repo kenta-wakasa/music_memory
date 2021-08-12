@@ -33,7 +33,8 @@ class _AnswerPageState extends State<AnswerPage> {
             soundUri: widget.question.soundMap[key]!,
           ),
         )
-        .toList();
+        .toList()
+          ..shuffle();
 
     await Future.wait([
       qSound.init(),
