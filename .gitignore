@@ -48,3 +48,5 @@ app.*.map.json
 /ios/Podfile.lock
 /ios/GoogleService-Info.plist
 /android/app/google-services.json
+/ExportOptions.plist
+/secrets.md

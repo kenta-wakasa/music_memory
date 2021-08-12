@@ -26,6 +26,14 @@ apply plugin: 'kotlin-android'
 apply plugin: 'com.google.gms.google-services'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
+def hasReleaseProps = false
+def releasePropsFile = rootProject.file('release.properties')
+def releaseProps = new Properties()
+if (releasePropsFile.exists()) {
+    releaseProps.load(new FileInputStream(releasePropsFile))
+    hasReleaseProps = true
+}
+
 android {
     compileSdkVersion 30
 
@@ -52,11 +60,22 @@ android {
         multiDexEnabled true
     }
 
+    signingConfigs {
+        release {
+            if (hasReleaseProps) {
+                keyAlias releaseProps['keyAlias']
+                keyPassword releaseProps['keyPassword']
+                storeFile rootProject.file(releaseProps['storeFile'])
+                storePassword releaseProps['storePassword']
+            }
+        }
+    }
+
     buildTypes {
         release {
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.release
         }
     }
 }

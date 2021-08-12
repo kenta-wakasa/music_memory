@@ -58,8 +58,12 @@ class _InstructionPageState extends State<InstructionPage> {
                 onPressed: controller.text.isNotEmpty
                     ? () {
                         UserData.instance.subjectId = controller.text;
-                        final question = UserData.instance.questionList.removeAt(0);
-                        pushAndRemoveUntilPage(context, AnswerPage(question: question));
+                        pushAndRemoveUntilPage(
+                          context,
+                          AnswerPage(
+                            question: UserData.instance.questionList.removeAt(0),
+                          ),
+                        );
                       }
                     : null,
                 child: const Text('実験をはじめる'),
