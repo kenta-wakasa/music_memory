@@ -1,7 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:music_memory/models/log.dart';
 import 'package:music_memory/models/question.dart';
 import 'package:music_memory/models/sound.dart';
+import 'package:music_memory/repositories/user_data.dart';
+import 'package:music_memory/utils/utils.dart';
+import 'package:music_memory/widgets/atoms/atom_play_widget.dart';
+import 'package:music_memory/widgets/post_question_page.dart';
 
 class AnswerPage extends StatefulWidget {
   const AnswerPage({Key? key, required this.question}) : super(key: key);
@@ -12,15 +17,24 @@ class AnswerPage extends StatefulWidget {
 }
 
 class _AnswerPageState extends State<AnswerPage> {
-  late final Sound qSound;
-  late final List<Sound> soundList;
+  late Sound qSound;
+  List<Sound> soundList = [];
   bool isInitialized = false;
 
-  Future<void> initialize() async {
-    qSound = Sound(soundName: widget.question.question.keys.first, soundUri: widget.question.question.values.first);
+  Future<void> init() async {
+    qSound = Sound(
+      soundName: widget.question.question.keys.first,
+      soundUri: widget.question.question.values.first,
+    );
     soundList = widget.question.soundMap.keys
-        .map((key) => Sound(soundName: key, soundUri: widget.question.soundMap[key]!))
+        .map(
+          (key) => Sound(
+            soundName: key,
+            soundUri: widget.question.soundMap[key]!,
+          ),
+        )
         .toList();
+
     await Future.wait([
       qSound.init(),
       ...soundList.map((e) => e.init()).toList(),
@@ -28,10 +42,11 @@ class _AnswerPageState extends State<AnswerPage> {
     isInitialized = true;
   }
 
-  @override
-  void initState() {
-    super.initState();
-    initialize();
+  void stopAll() {
+    qSound.stop();
+    for (final sound in soundList) {
+      sound.stop();
+    }
   }
 
   @override
@@ -42,37 +57,57 @@ class _AnswerPageState extends State<AnswerPage> {
         appBar: AppBar(
           title: const Text('問題'),
         ),
-        body: Center(
-          child: isInitialized
-              ? const CupertinoActivityIndicator()
-              : Column(
-                  children: [
-                    ElevatedButton(
-                      onPressed: () async {
-                        for (final sound in soundList) {
-                          sound.stop();
-                        }
-
-                        await qSound.play();
-                      },
-                      child: null,
-                    ),
-                    ...soundList
-                        .map(
-                          (sound) => ElevatedButton(
-                            onPressed: () async {
-                              for (final sound in soundList) {
-                                sound.stop();
-                              }
-                              qSound.stop();
-                              await sound.play();
-                            },
-                            child: null,
-                          ),
-                        )
-                        .toList(),
-                  ],
+        body: FutureBuilder(
+          future: init(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState != ConnectionState.done) {
+              return const Center(child: CupertinoActivityIndicator());
+            }
+            return Column(
+              children: [
+                const SizedBox(height: 16),
+                AtomPlayWidget(
+                  onPressed: () async {
+                    stopAll();
+                    qSound.play(widget.question);
+                  },
                 ),
+                const SizedBox(height: 32),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: soundList
+                      .map(
+                        (sound) => Column(
+                          children: [
+                            AtomPlayWidget(
+                              onPressed: () async {
+                                stopAll();
+                                sound.play(widget.question);
+                              },
+                              color: Colors.grey,
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                UserData.instance.addLog(
+                                  TimeStampLog(questionId: widget.question.id, key: 'select', value: sound.soundName),
+                                );
+                                pushAndRemoveUntilPage(
+                                  context,
+                                  PostQuestionPage(
+                                    question: widget.question,
+                                  ),
+                                );
+                              },
+                              child: const Text('選択'),
+                            ),
+                          ],
+                        ),
+                      )
+                      .toList(),
+                )
+              ],
+            );
+          },
         ),
       ),
     );

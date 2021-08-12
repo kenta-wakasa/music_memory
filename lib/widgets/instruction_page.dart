@@ -57,7 +57,7 @@ class _InstructionPageState extends State<InstructionPage> {
               ElevatedButton(
                 onPressed: controller.text.isNotEmpty
                     ? () {
-                        UserData.instance.userId = controller.text;
+                        UserData.instance.subjectId = controller.text;
                         final question = UserData.instance.questionList.removeAt(0);
                         pushAndRemoveUntilPage(context, AnswerPage(question: question));
                       }
