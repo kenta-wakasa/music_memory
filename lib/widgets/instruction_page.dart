@@ -29,47 +29,45 @@ class _InstructionPageState extends State<InstructionPage> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async => false,
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text('実験'),
-        ),
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(16),
-                child: Text(widget.experiment.instruction),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(16),
-                child: TextFormField(
-                  controller: controller,
-                  autofocus: true,
-                  keyboardType: TextInputType.emailAddress,
-                  decoration: const InputDecoration(
-                    labelText: 'IDを入力してください',
-                    border: OutlineInputBorder(),
-                  ),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('実験'),
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Text(widget.experiment.instruction),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: TextFormField(
+                controller: controller,
+                autofocus: true,
+                keyboardType: TextInputType.emailAddress,
+                decoration: const InputDecoration(
+                  labelText: 'IDを入力してください',
+                  border: OutlineInputBorder(),
                 ),
               ),
-              ElevatedButton(
-                onPressed: controller.text.isNotEmpty
-                    ? () {
-                        UserData.instance.subjectId = controller.text;
-                        pushAndRemoveUntilPage(
-                          context,
-                          AnswerPage(
-                            question: UserData.instance.questionList.removeAt(0),
-                          ),
-                        );
-                      }
-                    : null,
-                child: const Text('実験をはじめる'),
-              )
-            ],
-          ),
+            ),
+            ElevatedButton(
+              onPressed: controller.text.isNotEmpty
+                  ? () {
+                      UserData.instance.subjectId = controller.text;
+
+                      pushAndRemoveUntilPage(
+                        context,
+                        AnswerPage(
+                          question: UserData.instance.questionList[0],
+                        ),
+                      );
+                    }
+                  : null,
+              child: const Text('実験をはじめる'),
+            )
+          ],
         ),
       ),
     );

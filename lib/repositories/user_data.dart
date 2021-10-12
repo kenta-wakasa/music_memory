@@ -10,6 +10,7 @@ import 'package:path_provider/path_provider.dart';
 class UserData {
   UserData._();
   static final instance = UserData._();
+  int index = 0;
   String subjectId = '';
   Experiment? experiment;
   List<Question> questionList = [];
@@ -49,6 +50,7 @@ class UserData {
 
   /// 実験データのアップロード後に呼ぶこと。実験情報の初期化
   void reset() {
+    index = 0;
     subjectId = '';
     experiment = null;
     questionList.clear();

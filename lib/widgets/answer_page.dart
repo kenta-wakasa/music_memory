@@ -34,7 +34,7 @@ class _AnswerPageState extends State<AnswerPage> {
           ),
         )
         .toList()
-          ..shuffle();
+      ..shuffle();
 
     await Future.wait([
       qSound.init(),
@@ -56,6 +56,13 @@ class _AnswerPageState extends State<AnswerPage> {
       onWillPop: () async => false,
       child: Scaffold(
         appBar: AppBar(
+          leading: Padding(
+            padding: const EdgeInsets.all(8),
+            child: Text(
+              '${UserData.instance.index + 1} / ${UserData.instance.questionList.length}',
+              style: Theme.of(context).textTheme.bodyText1,
+            ),
+          ),
           title: const Text('問題'),
         ),
         body: FutureBuilder(
@@ -68,6 +75,7 @@ class _AnswerPageState extends State<AnswerPage> {
               children: [
                 const SizedBox(height: 16),
                 AtomPlayWidget(
+                  color: Colors.amber,
                   onPressed: () async {
                     stopAll();
                     qSound.play(widget.question);
@@ -85,13 +93,14 @@ class _AnswerPageState extends State<AnswerPage> {
                                 stopAll();
                                 sound.play(widget.question);
                               },
-                              color: Colors.grey,
+                              color: Colors.blue,
                             ),
                             TextButton(
                               onPressed: () {
                                 UserData.instance.addLog(
                                   TimeStampLog(questionId: widget.question.id, key: 'select', value: sound.soundName),
                                 );
+                                stopAll();
                                 pushAndRemoveUntilPage(
                                   context,
                                   PostQuestionPage(

@@ -25,7 +25,7 @@ class _PostQuestionPageState extends State<PostQuestionPage> {
 
   Future<void> init() async {
     for (final postQuestion in postQuestionList) {
-      answerMap[postQuestion.question] = 2.0;
+      answerMap[postQuestion.question] = 3.0;
     }
     qSound = Sound(
       soundName: widget.question.question.keys.first,
@@ -71,6 +71,7 @@ class _PostQuestionPageState extends State<PostQuestionPage> {
                     const SizedBox(height: 32),
                     ElevatedButton(
                       onPressed: () {
+                        qSound.stop();
                         for (final key in answerMap.keys) {
                           UserData.instance.addLog(
                             TimeStampLog(
@@ -81,7 +82,9 @@ class _PostQuestionPageState extends State<PostQuestionPage> {
                           );
                         }
 
-                        if (UserData.instance.questionList.isEmpty) {
+                        UserData.instance.index++;
+
+                        if (UserData.instance.questionList.length == UserData.instance.index) {
                           // 実験終了画面に遷移
                           pushAndRemoveUntilPage(context, const FinishExperiment());
                           return;
@@ -90,7 +93,7 @@ class _PostQuestionPageState extends State<PostQuestionPage> {
                         // 次の問題に遷移
                         pushAndRemoveUntilPage(
                           context,
-                          AnswerPage(question: UserData.instance.questionList.removeAt(0)),
+                          AnswerPage(question: UserData.instance.questionList[UserData.instance.index]),
                         );
                         return;
                       },
@@ -130,13 +133,13 @@ class _PostQuestionWidgetState extends State<PostQuestionWidget> {
           Text(widget.postQuestion.question),
           Slider(
             min: 0,
-            max: 4,
+            max: 6,
             value: widget.answerMap[widget.postQuestion.question]!,
             onChanged: (value) {
               widget.answerMap[widget.postQuestion.question] = value;
               setState(() {});
             },
-            divisions: 4,
+            divisions: 6,
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
